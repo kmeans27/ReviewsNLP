@@ -14,9 +14,6 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.decomposition import LatentDirichletAllocation
 from nltk.stem import WordNetLemmatizer
 import spacy
-
-
-
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
@@ -25,8 +22,7 @@ reviews = pd.read_csv("fire_hd_reviews_pre_cleaned.csv", on_bad_lines='skip', nr
 # check if the shape is correct
 print("Dataframe shape:", reviews.shape)
 
-
-
+# currently not working spacy implementation
 # def load_data(file):
 #     with open(file, "r", encoding="utf-8") as file:
 #         data = csv.reader(file)
@@ -73,7 +69,7 @@ vect = bow.transform(corpus)
 # view the Bag of Words corpus as a pandas dataframe
 df_count_vocabulary = pd.DataFrame(data=vect.toarray(), columns=vocabulary)
 pd.set_option("display.max_columns", None)
-print(df_count_vocabulary)
+#print(df_count_vocabulary)
 #print(df_count_vocabulary.to_string())
 
 # create the Term Frequency - Inverse Document Frequency from the cleaned corpus
@@ -82,8 +78,6 @@ model_test = vectorizer_test.fit_transform(corpus)
 data = pd.DataFrame(model_test.toarray(), columns=vectorizer_test.get_feature_names())
 # print(data)
 
-#Bigrams and Trigrams
-
 
 # semantic analysis
 # Latent Semantic Analysis
@@ -91,16 +85,15 @@ vectorizer = TfidfVectorizer(use_idf=True, smooth_idf=True)
 model = vectorizer.fit_transform(corpus)
 LSA_model = TruncatedSVD(n_components=20, algorithm="randomized", n_iter=10)
 lsa = LSA_model.fit_transform(model)
-# print("Review 0 :")
+
 # for i, topic in enumerate(lsa[0]):
-#     print("Topic ", i, " : ", topic*100)
+#      print("Topic ", i, " : ", topic*100)
 
 
 # Latent Dirichlet Allocation
 lda_model = LatentDirichletAllocation(n_components=20, learning_method="online", random_state=50, )
 lda_top = lda_model.fit_transform(model)
 
-# print("Review 1: ")
 # for i, topic in enumerate(lda_top[0]):
 #     print("Topic ", i, ": ", topic*100, "%")
 # if __name__ == '__main__':
