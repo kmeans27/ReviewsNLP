@@ -63,8 +63,9 @@ for w in range(0, len(reviews)):
 bow = CountVectorizer(ngram_range=(1,3)).fit(corpus)
 vocabulary = bow.get_feature_names()
 vect = bow.transform(corpus)
-# print(vocabulary)
-
+#print(vocabulary)
+#number of words within the vocabulary. Bigrams and trigrams included
+print("Words within the vocabulary:", len(vocabulary))
 
 # view the Bag of Words corpus as a pandas dataframe
 df_count_vocabulary = pd.DataFrame(data=vect.toarray(), columns=vocabulary)
@@ -73,10 +74,12 @@ pd.set_option("display.max_columns", None)
 #print(df_count_vocabulary.to_string())
 
 # create the Term Frequency - Inverse Document Frequency from the cleaned corpus
-vectorizer_test = TfidfVectorizer(min_df=1)
+vectorizer_test = TfidfVectorizer(min_df=1, ngram_range=(1,3))
 model_test = vectorizer_test.fit_transform(corpus)
 data = pd.DataFrame(model_test.toarray(), columns=vectorizer_test.get_feature_names())
 # print(data)
+#Matrix dimensions. Bigrams and trigrams included
+print("TfId matrix shape:", data.shape)
 
 
 # semantic analysis
@@ -84,15 +87,40 @@ data = pd.DataFrame(model_test.toarray(), columns=vectorizer_test.get_feature_na
 vectorizer = TfidfVectorizer(use_idf=True, smooth_idf=True)
 model = vectorizer.fit_transform(corpus)
 LSA_model = TruncatedSVD(n_components=20, algorithm="randomized", n_iter=10)
+LSA_model.fit(model)
 lsa = LSA_model.fit_transform(model)
 
 # for i, topic in enumerate(lsa[0]):
 #      print("Topic ", i, " : ", topic*100)
 
+# make use of the data
+#print(LSA_model.components_[0])
+# terms = vectorizer.get_feature_names()
+# for i, comp in enumerate (LSA_model.components_):
+#     termsInComp = zip (terms, comp)
+#     # print the first 20 concepts
+#     sortedTerms = sorted(termsInComp, key= lambda x: x[1], reverse = True) [:20]
+#     print ("Concept %d: " %i)
+#     for term in sortedTerms:
+#         print(term[0])
+#     print(" ")
+
 
 # Latent Dirichlet Allocation
 lda_model = LatentDirichletAllocation(n_components=20, learning_method="online", random_state=50, )
 lda_top = lda_model.fit_transform(model)
+
+#make use of the data
+# print(lda_model.components_[0])
+# terms = vectorizer.get_feature_names()
+# for i, comp in enumerate (lda_model.components_):
+#     termsInComp = zip (terms, comp)
+#     # print the first 20 concepts
+#     sortedTerms = sorted(termsInComp, key= lambda x: x[1], reverse = True) [:20]
+#     print ("Concept %d: " %i)
+#     for term in sortedTerms:
+#         print(term[0])
+#     print(" ")
 
 # for i, topic in enumerate(lda_top[0]):
 #     print("Topic ", i, ": ", topic*100, "%")
